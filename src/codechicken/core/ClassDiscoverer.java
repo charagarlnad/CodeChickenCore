@@ -1,5 +1,15 @@
 package codechicken.core;
 
+import codechicken.core.launch.CodeChickenCorePlugin;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
+import cpw.mods.fml.common.FMLLog;
+import cpw.mods.fml.common.Loader;
+import cpw.mods.fml.common.ModClassLoader;
+import cpw.mods.fml.relauncher.CoreModManager;
+import net.minecraft.launchwrapper.Launch;
+import org.objectweb.asm.ClassReader;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -8,19 +18,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-
-import net.minecraft.launchwrapper.Launch;
-import org.objectweb.asm.tree.ClassNode;
-
-import codechicken.core.launch.CodeChickenCorePlugin;
-import codechicken.lib.asm.ASMHelper;
-
-import com.google.common.collect.ImmutableList;
-
-import cpw.mods.fml.common.FMLLog;
-import cpw.mods.fml.common.Loader;
-import cpw.mods.fml.common.ModClassLoader;
-import cpw.mods.fml.relauncher.CoreModManager;
 
 public class ClassDiscoverer
 {
@@ -62,9 +59,13 @@ public class ClassDiscoverer
             if (bytes == null)
                 return;
 
-            ClassNode cnode = ASMHelper.createClassNode(bytes);
+            ClassReader reader = new ClassReader(bytes);
+            List<String> interfaces = Lists.newArrayList(reader.getSuperName());
+            for (String itf : reader.getInterfaces())
+                interfaces.add(itf);
+
             for (String superclass : superclasses)
-                if (!cnode.interfaces.contains(superclass) && !cnode.superName.equals(superclass))
+                if (!interfaces.contains(superclass))
                     return;
 
             addClass(classname);
