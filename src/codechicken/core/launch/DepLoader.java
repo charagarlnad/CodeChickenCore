@@ -77,7 +77,6 @@ public class DepLoader implements IFMLLoadingPlugin, IFMLCallHook {
         private File v_modsDir;
 
         private Map<String, Dependency> depMap = new HashMap<String, Dependency>();
-        private HashSet<String> depSet = new HashSet<String>();
 
         public DepLoadInst() {
             String mcVer = (String) FMLInjectionData.data()[4];
@@ -142,12 +141,7 @@ public class DepLoader implements IFMLLoadingPlugin, IFMLCallHook {
         }
 
         private void loadDeps() {
-            Iterator<String> it = depSet.iterator();
-            while (!depSet.isEmpty()) {
-                Dependency dep = depMap.get(it.next());
-                it.remove();
-                load(dep);
-            }
+            depMap.forEach((k,v) -> load(v));
         }
 
         private void load(Dependency dep) {
@@ -237,7 +231,6 @@ public class DepLoader implements IFMLLoadingPlugin, IFMLCallHook {
         private void addDep(Dependency newDep) {
             if (mergeNew(depMap.get(newDep.file.name), newDep)) {
                 depMap.put(newDep.file.name, newDep);
-                depSet.add(newDep.file.name);
             }
         }
 
