@@ -104,7 +104,7 @@ public class CodeChickenCorePlugin implements IFMLLoadingPlugin, IFMLCallHook
 
     @Override
     public String getAccessTransformerClass() {
-        return "codechicken.core.asm.CodeChickenAccessTransformer";
+        return null;
     }
 
     @Override
